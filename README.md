@@ -7,7 +7,7 @@ Make an app that lets people design and take surveys. Here are some user stories
 
 2. As a survey designer, I want to add questions to my survey, so that I can find out what people think about them.
 
-As a survey designer, I want to add possible responses to each question, so that I can structure people's opinions into discrete choices that they must choose among. At this point, I want all questions to be multiple-choice, pick one.
+3. As a survey designer, I want to add possible responses to each question, so that I can structure people's opinions into discrete choices that they must choose among. At this point, I want all questions to be multiple-choice, pick one.
 
 As a survey taker, I want to be able to choose what survey to take, so that I can give the surveyor my opinion.
 

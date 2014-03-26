@@ -34,6 +34,7 @@ end
 def designer_menu
   puts "Press 'a' to add a new survey."
   puts "Press 'l' to list surveys."
+  puts "Press 's' to show a survey, its questions and responses."
   puts "Press 'q' to add questions to an existing survey."
   puts "Press 'r' to add responses to a question."
   puts "Press 'x' to return to the main menu."
@@ -45,6 +46,10 @@ def designer_menu
     designer_menu
   when 'l'
     list_surveys
+    designer_menu
+  when 's'
+    survey = select_survey
+    show(survey)
     designer_menu
   when 'q'
     survey = select_survey
@@ -100,7 +105,7 @@ def add_responses(question)
   until add_another == 'n'
     description = get_input("Please input a response to '#{question.prompt}':")
     choice = letters.shift
-    new_response = question.responses.create({ :choice => choice, :description => description })
+    new_response = question.responses.create({ :choice => choice, :description => description, :times_marked => 0 })
     puts "#{new_response.choice}. #{new_response.description} has been added."
     if choice == 'F'
       puts "If you would like to enter more responses please contact your system administrator."
@@ -111,9 +116,24 @@ def add_responses(question)
   end
 end
 
+def show(survey)
+  system "clear"
+  puts "** #{survey.name}"
+  puts "=========================\n\n"
+  survey.questions.each_with_index do |question, index|
+    puts "#{index + 1}. #{question.prompt}"
+    question.responses.each do |response|
+      puts "\t#{response.choice}) #{response.description}"
+    end
+    puts "\n\n"
+  end
+end
+
 #******************************************
 
 def taker_menu
+
+
 end
 
 #*******************************************
