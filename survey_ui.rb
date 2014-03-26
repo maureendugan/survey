@@ -31,14 +31,10 @@ def main_menu
   end
 end
 
-def get_input(question)
-  puts question
-  gets.chomp
-end
-
 def designer_menu
   puts "Press 'a' to add a new survey."
   puts "Press 'l' to list surveys."
+  puts "Press 'q' to add questions to an existing survey."
   puts "Press 'x' to return to the main menu."
   choice = get_input('Enter your choice:').downcase
 
@@ -48,6 +44,9 @@ def designer_menu
     designer_menu
   when 'l'
     list_surveys
+    designer_menu
+  when 'q'
+    add_questions
     designer_menu
   when 'x'
     puts 'Returning to main menu.'
@@ -67,12 +66,27 @@ def add_survey
   end
 end
 
-def list_surveys
-  puts "--Surveys" + "-"*11
-  Survey.all.each do |survey|
-    puts survey.name
+def add_questions
+  list_surveys
+  selected_survey = get_input("What survey would you like to add questions to?")
+  survey = Survey.find_by_name(selected_survey)
+  add_another = 'y'
+  until add_another == 'n'
+    prompt = get_input("Please input your question:")
+    created_question = survey.questions.create({ :prompt => prompt })
+    puts "Your question '#{created_question.prompt}' was created."
+    add_another = get_input("Do you want to add another question to this survey? (y/n)").downcase
   end
-  puts '-'*20 + "\n"
+  list_questions(survey)
+end
+
+def list_questions(survey)
+  puts "--#{survey.name} "
+  puts "---Here are your questions:"
+  survey.questions.each_with_index do |question, index|
+    puts "#{index + 1}. #{question.prompt}"
+  end
+  puts "-"*20 + "\n"
 end
 
 #******************************************
@@ -80,6 +94,20 @@ end
 def taker_menu
 end
 
+#*******************************************
+
+def get_input(question)
+  puts question
+  gets.chomp
+end
+
+def list_surveys
+  puts "--Surveys" + "-"*11
+  Survey.all.each do |survey|
+    puts survey.name
+  end
+  puts '-'*20 + "\n"
+end
 
 system "clear"
 puts 'Welcome to the Survey Center'
