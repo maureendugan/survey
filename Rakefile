@@ -1,3 +1,3 @@
 require 'active_record_migrations'
-ActiveRecordMigrations.load_test
+ActiveRecordMigrations.load_tasks
 
