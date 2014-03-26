@@ -35,6 +35,7 @@ def designer_menu
   puts "Press 'a' to add a new survey."
   puts "Press 'l' to list surveys."
   puts "Press 'q' to add questions to an existing survey."
+  puts "Press 'r' to add responses to a question."
   puts "Press 'x' to return to the main menu."
   choice = get_input('Enter your choice:').downcase
 
@@ -46,7 +47,13 @@ def designer_menu
     list_surveys
     designer_menu
   when 'q'
-    add_questions
+    survey = select_survey
+    add_questions(survey)
+    designer_menu
+  when 'r'
+    survey = select_survey
+    question = select_question(survey)
+    add_responses(question)
     designer_menu
   when 'x'
     puts 'Returning to main menu.'
@@ -66,15 +73,13 @@ def add_survey
   end
 end
 
-def add_questions
-  list_surveys
-  selected_survey = get_input("What survey would you like to add questions to?")
-  survey = Survey.find_by_name(selected_survey)
+def add_questions(survey)
   add_another = 'y'
   until add_another == 'n'
     prompt = get_input("Please input your question:")
     created_question = survey.questions.create({ :prompt => prompt })
     puts "Your question '#{created_question.prompt}' was created."
+    add_responses(created_question)
     add_another = get_input("Do you want to add another question to this survey? (y/n)").downcase
   end
   list_questions(survey)
@@ -87,6 +92,23 @@ def list_questions(survey)
     puts "#{index + 1}. #{question.prompt}"
   end
   puts "-"*20 + "\n"
+end
+
+def add_responses(question)
+  letters = ('A'..'F').to_a
+  add_another = 'y'
+  until add_another == 'n'
+    description = get_input("Please input a response to '#{question.prompt}':")
+    choice = letters.shift
+    new_response = question.responses.create({ :choice => choice, :description => description })
+    puts "#{new_response.choice}. #{new_response.description} has been added."
+    if choice == 'F'
+      puts "If you would like to enter more responses please contact your system administrator."
+      add_another = 'n'
+    else
+      add_another = get_input("Do you want to add another response? (y/n)").downcase
+    end
+  end
 end
 
 #******************************************
@@ -107,6 +129,18 @@ def list_surveys
     puts survey.name
   end
   puts '-'*20 + "\n"
+end
+
+def select_survey
+  list_surveys
+  selected_survey = get_input("What survey would you like to select?")
+  survey = Survey.find_by_name(selected_survey)
+end
+
+def select_question(survey)
+  list_questions(survey)
+  question_index = get_input("Enter question number:").to_i - 1
+  selected_question = survey.questions[question_index]
 end
 
 system "clear"
