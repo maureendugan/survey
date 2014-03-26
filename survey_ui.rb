@@ -132,8 +132,47 @@ end
 #******************************************
 
 def taker_menu
+  puts "Press 'f' to find a survey to take."
+  puts "Press 'x' to return to the main menu."
+  choice = get_input('Enter your choice:').downcase
+  case choice
+  when 'f'
+    survey = select_survey
+    take_survey(survey)
+  when 'x'
+    puts "Returning to main menu."
+  else
+    puts "Invalid input."
+  end
 
+end
 
+def take_survey(survey)
+  survey.questions.each_with_index do |question, index|
+    system "clear"
+    puts "#{survey.name}: Question #{index + 1} of #{survey.questions.length}"
+    puts "#{index + 1}. #{question.prompt}"
+    question.responses.each do |response|
+      puts "\t#{response.choice}) #{response.description}"
+    end
+    puts "\n\n"
+    puts "Enter your answer below, enter 'skip' to skip this question."
+    taker_choice = get_input('Your answer: ').upcase
+    if taker_choice != 'SKIP'
+      chosen_response = nil
+      chosen_response = question.responses.select { |response| response.choice == taker_choice }
+      chosen_response = chosen_response[0]
+      if chosen_response.nil?
+        puts "Invalid choice."
+      else
+        chosen_response.increment!(:times_marked, 1)
+        puts "Your answer is #{chosen_response.choice}"
+      end
+    end
+    puts "Press any key for the next question"
+    gets.chomp
+  end
+  puts "Thank you for your responses."
 end
 
 #*******************************************
