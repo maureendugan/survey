@@ -37,6 +37,7 @@ def designer_menu
   puts "Press 's' to show a survey, its questions and responses."
   puts "Press 'q' to add questions to an existing survey."
   puts "Press 'r' to add responses to a question."
+  puts "Press '%' to see the response rates to a particular question."
   puts "Press 'x' to return to the main menu."
   choice = get_input('Enter your choice:').downcase
 
@@ -55,6 +56,10 @@ def designer_menu
     survey = select_survey
     add_questions(survey)
     designer_menu
+  when '%'
+    survey = select_survey
+    question = select_question(survey)
+    view_percents(question)
   when 'r'
     survey = select_survey
     question = select_question(survey)
@@ -97,6 +102,19 @@ def list_questions(survey)
     puts "#{index + 1}. #{question.prompt}"
   end
   puts "-"*20 + "\n"
+end
+
+def view_percents(question)
+  total_responses = 0
+  question.responses.each do |response|
+    total_responses += response.times_marked.to_i
+  end
+  puts "--#{question.prompt}"
+  puts "---Here are the response percentages:\n"
+  puts "\tpercent | count | response    "
+  question.responses.reorder('choice').each do |response|
+    puts "\t#{(response.times_marked.to_i/total_responses.to_f)*100} %\t    #{response.times_marked.to_i}  \t  #{response.description}"
+  end
 end
 
 def add_responses(question)
@@ -144,7 +162,6 @@ def taker_menu
   else
     puts "Invalid input."
   end
-
 end
 
 def take_survey(survey)
